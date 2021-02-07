@@ -50,24 +50,32 @@ document.addEventListener('DOMContentLoaded', () => {
       img: 'images/hotdog.png'
     }
   ]
-
+  
   cardArray.sort(() => 0.5 - Math.random())
 
   const grid = document.querySelector('.grid')
+  const updateArea = document.querySelector('.update')
   const resultDisplay = document.querySelector('#result')
+  const gamesDisplay = document.querySelector('#games')
   let cardsChosen = []
   let cardsChosenId = []
   let cardsWon = []
+  var score = 0
+  var gamesPlayed = 0
 
   //create your board
   function createBoard() {
-    for (let i = 0; i < cardArray.length; i++) {
+    cardArray.sort(() => 0.5 - Math.random())
+    for (let i = 0; i < 9; i++) {
       const card = document.createElement('img')
-      card.setAttribute('src', 'images/blank.png')
+      card.setAttribute('src', 'images/GreyTile.png')
       card.setAttribute('data-id', i)
       card.addEventListener('click', flipCard)
       grid.appendChild(card)
     }
+    cardsChosen = []
+    cardsChosenId = []
+    cardsWon = []
   }
 
   //check for matches
@@ -75,29 +83,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('img')
     const optionOneId = cardsChosenId[0]
     const optionTwoId = cardsChosenId[1]
-    
+    const updateText = document.createElement('span')
+
     if(optionOneId == optionTwoId) {
-      cards[optionOneId].setAttribute('src', 'images/blank.png')
-      cards[optionTwoId].setAttribute('src', 'images/blank.png')
-      alert('You have clicked the same image!')
+      cards[optionOneId].setAttribute('src', 'images/GreyTile.png')
+      cards[optionTwoId].setAttribute('src', 'images/GreyTile.png')
+      updateText.textContent = 'You have clicked the same image!'
     }
     else if (cardsChosen[0] === cardsChosen[1]) {
-      alert('You found a match')
       cards[optionOneId].setAttribute('src', 'images/white.png')
       cards[optionTwoId].setAttribute('src', 'images/white.png')
       cards[optionOneId].removeEventListener('click', flipCard)
       cards[optionTwoId].removeEventListener('click', flipCard)
       cardsWon.push(cardsChosen)
+      updateText.textContent = 'You found a match'
+      score += 1
     } else {
-      cards[optionOneId].setAttribute('src', 'images/blank.png')
-      cards[optionTwoId].setAttribute('src', 'images/blank.png')
-      alert('Sorry, try again')
+      cards[optionOneId].setAttribute('src', 'images/GreyTile.png')
+      cards[optionTwoId].setAttribute('src', 'images/GreyTile.png')
+      updateText.textContent = 'Sorry, try again'
+      score -= 1
     }
+    
+    updateArea.appendChild(updateText)
+    updateArea.appendChild(document.createElement('br'))
     cardsChosen = []
     cardsChosenId = []
-    resultDisplay.textContent = cardsWon.length
+    resultDisplay.textContent = score.toString()
     if  (cardsWon.length === cardArray.length/2) {
-      resultDisplay.textContent = 'Congratulations! You found them all!'
+      updateText.innerHTML = 'Congratulations! You found them all!'
+      grid.innerHTML = ''
+      setTimeout(createBoard, 1000)
+      gamesPlayed += 1
+      gamesDisplay.textContent = gamesPlayed.toString()
     }
   }
 
@@ -112,5 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function cleanUpdateTestArea() {
+  }
+
   createBoard()
+  
 })
